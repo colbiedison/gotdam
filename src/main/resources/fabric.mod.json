@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "gotdam",
+  "version": "${version}",
+
+  "name": "Got Dam",
+  "description": "Dams and hydroelectric power.",
+  "authors": [
+    "ColbiesTheName"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "us.dison.gotdam.GotDam"
+    ]
+  },
+  "mixins": [
+    "gotdam.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.18.2",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
