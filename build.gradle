@@ -19,6 +19,10 @@ repositories {
 
 	maven { url "https://maven.shedaniel.me" }
 	maven { url "https://maven.terraformersmc.com" }
+	maven {
+		name = "CottonMC"
+		url = "https://server.bbkr.space/artifactory/libs-release"
+	}
 }
 
 dependencies {
@@ -39,7 +43,8 @@ dependencies {
 	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:8.2.470"
 	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:8.2.470"
 
-
+	// LibGUI
+	modImplementation include("io.github.cottonmc:LibGui:5.4.2+1.18.2")
 
 }
 

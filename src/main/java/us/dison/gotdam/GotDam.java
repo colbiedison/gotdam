@@ -1,26 +1,27 @@
 package us.dison.gotdam;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.system.CallbackI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 import us.dison.gotdam.block.ControllerBlock;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
-
-import javax.annotation.Nullable;
+import us.dison.gotdam.screen.ControllerGuiDescription;
 
 public class GotDam implements ModInitializer {
 	public static final String MODID = "gotdam";
@@ -31,6 +32,7 @@ public class GotDam implements ModInitializer {
 	public static final Item ITEM_CONTROLLER = new BlockItem(BLOCK_CONTROLLER, new FabricItemSettings().group(ItemGroup.MISC));
 	public static final BlockEntityType<ControllerBlockEntity> BE_TYPE_CONTROLLER = FabricBlockEntityTypeBuilder.create(ControllerBlockEntity::new, BLOCK_CONTROLLER).build(null);
 
+	public static ScreenHandlerType<ControllerGuiDescription> SCREEN_HANDLER_TYPE = null;
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Got dam?");
@@ -39,6 +41,8 @@ public class GotDam implements ModInitializer {
 		registerItems();
 		registerBlockEntities();
 		registerEnergyStorage();
+
+		SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(ID_CONTROLLER, (syncId, inventory) -> new ControllerGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY));
 	}
 
 	private void registerBlocks() {

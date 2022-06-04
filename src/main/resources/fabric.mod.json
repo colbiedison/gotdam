@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "us.dison.gotdam.GotDam"
+    ],
+    "client": [
+      "us.dison.gotdam.client.GotDamClient"
     ]
   },
   "mixins": [
