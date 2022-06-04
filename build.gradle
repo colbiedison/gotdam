@@ -39,6 +39,9 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 
+	// Tech Reborn
+	modImplementation "TechReborn:TechReborn-1.18:5.2.0"
+
 	// Roughly Enough Items
 	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:8.2.470"
 	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:8.2.470"

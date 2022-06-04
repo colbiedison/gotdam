@@ -35,3 +35,7 @@ run/
 # generated data
 
 src/main/generated/
+
+# ignore my temporary gui textures
+
+src/main/resources/assets/gotdam/textures/gui/
