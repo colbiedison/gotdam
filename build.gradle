@@ -16,6 +16,9 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven { url "https://maven.shedaniel.me" }
+	maven { url "https://maven.terraformersmc.com" }
 }
 
 dependencies {
@@ -26,6 +29,68 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// TR Energy API
+	include modApi('teamreborn:energy:2.2.0') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+
+	// Roughly Enough Items
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:8.2.470"
+	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:8.2.470"
+
+
+
+}
+
+sourceSets {
+	datagen {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath += main.runtimeClasspath
+		compileClasspath += main.output
+		runtimeClasspath += main.output
+	}
+
+	main {
+		resources {
+			srcDirs += [
+			        'src/main/generated'
+			]
+		}
+	}
+}
+
+allprojects {
+	loom {
+		mods {
+			gotdam {
+				sourceSet project(":").sourceSets.main
+			}
+			gotdamdatagen {
+				sourceSet project(":").sourceSets.datagen
+			}
+		}
+	}
+}
+
+loom {
+	runs {
+		datagen {
+			server()
+			name "Data Generation"
+			vmArg "-Dfabric-api.datagen"
+			vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+			vmArg "-Dfabric-api.datagen.modid=gotdamdatagen"
+			runDir "build/datagen"
+			source sourceSets.datagen
+		}
+	}
+}
+build.dependsOn runDatagen
+
+runDatagen {
+	// Doesn't re-run the task when its up-to date
+	outputs.dir('src/main/generated')
 }
 
 processResources {
@@ -49,6 +114,7 @@ java {
 }
 
 jar {
+//	from file('src/main/generated')
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "gotdamdatagen",
+  "version": "${version}",
+
+  "name": "Got Dam Datagen",
+  "description": "",
+  "authors": [
+    "ColbiesTheName"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "datagen.GotDamDataGenerator"
+    ]
+  }
+}
