@@ -47,6 +47,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(2, ItemStack.EMPTY);
 
     public double scanProgress = 0;
+    private boolean scanning = false;
 
     public ControllerBlockEntity(BlockPos pos, BlockState state) {
         super(GotDam.BE_TYPE_CONTROLLER, pos, state);
@@ -115,25 +116,27 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         return new PropertyDelegate() {
             @Override
             public int get(int index) {
-                if (index == 0)
-                    return (int) energyStorage.amount;
-                else if (index == 1)
-                    return (int) (scanProgress);
-                else
-                    return -1;
+                return switch (index) {
+                    case 0 -> (int) energyStorage.amount;
+                    case 1 -> (int) scanProgress;
+                    case 2 -> scanning ? 1 : 0;
+
+                    default -> -1;
+                };
             }
 
             @Override
             public void set(int index, int value) {
-                if (index == 0)
-                    energyStorage.amount = value;
-                else if (index == 1)
-                    scanProgress = value;
+                switch (index) {
+                    case 0 -> energyStorage.amount = value;
+                    case 1 -> scanProgress = value;
+                    case 2 -> scanning = value != 0;
+                }
             }
 
             @Override
             public int size() {
-                return 2;
+                return 3;
             }
         };
     }
@@ -164,5 +167,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         return true;
     }
 
-
+    public void setScanning(boolean state) {
+        this.scanning = state;
+    }
 }
