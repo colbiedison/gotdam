@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
+import us.dison.gotdam.client.GotDamClient;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.packets.ControllerScanTogglePacket;
 
@@ -37,8 +38,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         // Scan button
         SyncedWToggleButton toggleScanButton = new SyncedWToggleButton(2);
         toggleScanButton.setOnToggle(state -> {
-            BlockPos maybePos = context.get((world1, pos1) -> pos1, new BlockPos(-2, 87, 0));
-            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(maybePos, state).getPayload());
+            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), state).getPayload());
         });
         root.add(toggleScanButton, 50 ,50);
 

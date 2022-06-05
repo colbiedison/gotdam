@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.minecraft.util.math.BlockPos;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.BasePacketHandler;
@@ -13,6 +14,8 @@ import us.dison.gotdam.screen.ControllerScreen;
 
 @Environment(EnvType.CLIENT)
 public class GotDamClient implements ClientModInitializer {
+
+    private static BlockPos openControllerPos = null;
 
     @Override
     public void onInitializeClient() {
@@ -30,5 +33,13 @@ public class GotDamClient implements ClientModInitializer {
                 });
             });
         }
+    }
+
+    public static void onOpenController(BlockPos pos) {
+        openControllerPos = pos;
+    }
+
+    public static BlockPos getOpenControllerPos() {
+        return openControllerPos;
     }
 }

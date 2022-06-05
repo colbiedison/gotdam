@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
+import us.dison.gotdam.client.GotDamClient;
 
 public class ControllerBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -29,6 +30,8 @@ public class ControllerBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world.isClient)
+            GotDamClient.onOpenController(pos);
         player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         return ActionResult.SUCCESS;
     }
