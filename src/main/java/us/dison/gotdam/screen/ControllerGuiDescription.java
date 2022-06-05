@@ -3,11 +3,19 @@ package us.dison.gotdam.screen;
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
+import us.dison.gotdam.network.BasePacket;
+import us.dison.gotdam.network.packets.ControllerScanTogglePacket;
+
+import java.util.Optional;
 
 public class ControllerGuiDescription extends SyncedGuiDescription {
 
@@ -27,17 +35,11 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         root.add(itemSlot, 10, 20);
 
         // Scan button
-        WToggleButton toggleScanButton = new WToggleButton();
-        // attempt 1
-        toggleScanButton.setOnToggle(state -> getPropertyDelegate().set(2, state ? 1 : 0));
-//        // attempt 2
-//        toggleScanButton.setOnToggle(state ->
-//            context.run((world1, pos) -> {
-//                if (world1.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
-//                    controller.setScanning(state);
-//                }
-//        }));
-
+        SyncedWToggleButton toggleScanButton = new SyncedWToggleButton(2);
+        toggleScanButton.setOnToggle(state -> {
+            BlockPos maybePos = context.get((world1, pos1) -> pos1, new BlockPos(-2, 87, 0));
+            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(maybePos, state).getPayload());
+        });
         root.add(toggleScanButton, 50 ,50);
 
         // Energy storage bar

@@ -3,7 +3,6 @@ package us.dison.gotdam.inventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -24,9 +23,7 @@ public interface ImplementedInventory extends Inventory {
      * Creates an inventory from the item list.
      */
     static ImplementedInventory of(DefaultedList<ItemStack> items) {
-        return () -> {
-            return items;
-        };
+        return () -> items;
     }
 
     /**

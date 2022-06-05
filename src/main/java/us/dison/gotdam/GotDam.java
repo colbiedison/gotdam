@@ -2,6 +2,7 @@ package us.dison.gotdam;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -11,7 +12,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 import us.dison.gotdam.block.ControllerBlock;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
+import us.dison.gotdam.network.BasePacket;
+import us.dison.gotdam.network.BasePacketHandler;
 import us.dison.gotdam.screen.ControllerGuiDescription;
 
 public class GotDam implements ModInitializer {
@@ -41,6 +43,7 @@ public class GotDam implements ModInitializer {
 		registerItems();
 		registerBlockEntities();
 		registerEnergyStorage();
+		registerNetworking();
 
 		SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(ID_CONTROLLER, (syncId, inventory) -> new ControllerGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY));
 	}
@@ -61,5 +64,17 @@ public class GotDam implements ModInitializer {
 
 	private void registerEnergyStorage() {
 		EnergyStorage.SIDED.registerForBlockEntity((controllerEntity, direction) -> controllerEntity.energyStorage, BE_TYPE_CONTROLLER);
+	}
+
+	private void registerNetworking() {
+		for (BasePacketHandler.PacketTypes type : BasePacketHandler.PacketTypes.values()) {
+			ServerPlayNetworking.registerGlobalReceiver(BasePacket.CHANNEL, (server, player, handler, payload, responseSender) -> {
+				final int packetType = payload.readInt();
+				final BasePacket packet = BasePacketHandler.PacketTypes.getPacket(packetType).parsePacket(payload);
+				server.execute(() -> {
+					packet.handleOnServer(player);
+				});
+			});
+		}
 	}
 }

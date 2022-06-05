@@ -1,8 +1,6 @@
 package us.dison.gotdam.screen;
 
-import io.github.cottonmc.cotton.gui.PropertyDelegateHolder;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import org.jetbrains.annotations.Nullable;

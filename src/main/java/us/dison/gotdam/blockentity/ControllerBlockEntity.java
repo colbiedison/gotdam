@@ -1,7 +1,6 @@
 package us.dison.gotdam.blockentity;
 
 import io.github.cottonmc.cotton.gui.PropertyDelegateHolder;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
@@ -20,7 +19,6 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
@@ -48,6 +46,33 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     public double scanProgress = 0;
     private boolean scanning = false;
+
+    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> (int) energyStorage.amount;
+                case 1 -> (int) scanProgress;
+                case 2 -> scanning ? 1 : 0;
+
+                default -> -1;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0 -> energyStorage.amount = value;
+                case 1 -> scanProgress = value;
+                case 2 -> scanning = value != 0;
+            }
+        }
+
+        @Override
+        public int size() {
+            return 3;
+        }
+    };
 
     public ControllerBlockEntity(BlockPos pos, BlockState state) {
         super(GotDam.BE_TYPE_CONTROLLER, pos, state);
@@ -83,12 +108,14 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
         energyStorage.amount = tag.getLong("storedEnergy");
         Inventories.readNbt(tag, items);
+        scanning = tag.getBoolean("scanning");
     }
 
     @Override
     protected void writeNbt(NbtCompound tag) {
         tag.putLong("storedEnergy", energyStorage.amount);
         Inventories.writeNbt(tag, items);
+        tag.putBoolean("scanning", scanning);
 
         super.writeNbt(tag);
     }
@@ -102,7 +129,8 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     private void forceUpdate() {
         if (world != null) {
             BlockState state = world.getBlockState(pos);
-            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
+            if (!world.isClient)
+                world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
     }
 
@@ -113,32 +141,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     @Override
     public PropertyDelegate getPropertyDelegate() {
-        return new PropertyDelegate() {
-            @Override
-            public int get(int index) {
-                return switch (index) {
-                    case 0 -> (int) energyStorage.amount;
-                    case 1 -> (int) scanProgress;
-                    case 2 -> scanning ? 1 : 0;
-
-                    default -> -1;
-                };
-            }
-
-            @Override
-            public void set(int index, int value) {
-                switch (index) {
-                    case 0 -> energyStorage.amount = value;
-                    case 1 -> scanProgress = value;
-                    case 2 -> scanning = value != 0;
-                }
-            }
-
-            @Override
-            public int size() {
-                return 3;
-            }
-        };
+        return propertyDelegate;
     }
 
     @Override
@@ -169,5 +172,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     public void setScanning(boolean state) {
         this.scanning = state;
+        markDirty();
+        forceUpdate();
     }
 }
