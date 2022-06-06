@@ -20,6 +20,7 @@
 package us.dison.gotdam.network;
 
 import net.minecraft.network.PacketByteBuf;
+import us.dison.gotdam.network.packets.ControllerPowerTogglePacket;
 import us.dison.gotdam.network.packets.ControllerScanTogglePacket;
 
 import java.util.HashMap;
@@ -31,7 +32,9 @@ public class BasePacketHandler {
     private static final Map<Class<? extends BasePacket>, PacketTypes> REVERSE_LOOKUP = new HashMap<>();
 
     public enum PacketTypes {
-        CONTROLLER_SCAN_TOGGLE(ControllerScanTogglePacket.class, ControllerScanTogglePacket::new);
+        CONTROLLER_SCAN_TOGGLE(ControllerScanTogglePacket.class, ControllerScanTogglePacket::new),
+        CONTROLLER_POWER_TOGGLE(ControllerPowerTogglePacket.class, ControllerPowerTogglePacket::new)
+        ;
 
         private final Function<PacketByteBuf, BasePacket> factory;
 

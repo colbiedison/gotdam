@@ -1,5 +1,6 @@
 {
   "block.gotdam.controller": "Dam Controller",
   "item.gotdam.controller": "Dam Controller",
-  "message.gotdam.scan_progress": "Scan progress: %d%%"
+  "message.gotdam.scan_progress": "Scan progress: %d%%",
+  "gui.gotdam.button.power": "Power"
 }

@@ -1,0 +1,41 @@
+package us.dison.gotdam.network.packets;
+
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import us.dison.gotdam.blockentity.ControllerBlockEntity;
+import us.dison.gotdam.network.BasePacket;
+
+public class ControllerPowerTogglePacket extends BasePacket {
+    public final BlockPos pos;
+    public final boolean state;
+
+    public ControllerPowerTogglePacket(PacketByteBuf buf) {
+        this.pos = buf.readBlockPos();
+        this.state = buf.readBoolean();
+    }
+
+    public ControllerPowerTogglePacket(BlockPos pos, boolean state) {
+        this.pos = pos;
+        this.state = state;
+
+        PacketByteBuf data = new PacketByteBuf(Unpooled.buffer());
+        data.writeInt(this.getPacketID());
+        data.writeBlockPos(pos);
+        data.writeBoolean(state);
+        this.configureWrite(data);
+    }
+
+    @Override
+    public void handleOnServer(ServerPlayerEntity player) {
+        if (player.world instanceof ServerWorld world) {
+            world.getServer().execute(() -> {
+                if (world.getBlockEntity(this.pos) instanceof ControllerBlockEntity controller) {
+                    controller.setEnabled(state);
+                }
+            });
+        }
+    }
+}

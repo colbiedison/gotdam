@@ -17,9 +17,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import us.dison.gotdam.GotDam;
 
 public class SyncedWToggleButton extends WToggleButton {
-    private int field;
+    private final int field;
     public SyncedWToggleButton(int field) {
         super();
         this.field = field;
@@ -78,9 +79,12 @@ public class SyncedWToggleButton extends WToggleButton {
     public void tick() {
         super.tick();
         try {
+            int value = host.getPropertyDelegate().get(field);
             if (getToggle() == (host.getPropertyDelegate().get(field) == 0)) {
                 setToggle(!getToggle());
             }
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 }

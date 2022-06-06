@@ -46,6 +46,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     public double scanProgress = 0;
     private boolean scanning = false;
+    private boolean enabled = false;
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
@@ -54,6 +55,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
                 case 0 -> (int) energyStorage.amount;
                 case 1 -> (int) scanProgress;
                 case 2 -> scanning ? 1 : 0;
+                case 3 -> enabled ? 1 : 0;
 
                 default -> -1;
             };
@@ -65,12 +67,13 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
                 case 0 -> energyStorage.amount = value;
                 case 1 -> scanProgress = value;
                 case 2 -> scanning = value != 0;
+                case 3 -> enabled = value != 0;
             }
         }
 
         @Override
         public int size() {
-            return 3;
+            return 4;
         }
     };
 
@@ -109,6 +112,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         energyStorage.amount = tag.getLong("storedEnergy");
         Inventories.readNbt(tag, items);
         scanning = tag.getBoolean("scanning");
+        enabled = tag.getBoolean("enabled");
     }
 
     @Override
@@ -116,6 +120,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         tag.putLong("storedEnergy", energyStorage.amount);
         Inventories.writeNbt(tag, items);
         tag.putBoolean("scanning", scanning);
+        tag.putBoolean("enabled", enabled);
 
         super.writeNbt(tag);
     }
@@ -173,6 +178,10 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     public void setScanning(boolean state) {
         this.scanning = state;
         markDirty();
-        forceUpdate();
+    }
+
+    public void setEnabled(boolean state) {
+        this.enabled = state;
+        markDirty();
     }
 }
