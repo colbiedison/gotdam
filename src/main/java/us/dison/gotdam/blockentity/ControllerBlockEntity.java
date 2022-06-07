@@ -64,10 +64,10 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 0 -> energyStorage.amount = value;
-                case 1 -> scanProgress = value;
-                case 2 -> scanning = value != 0;
-                case 3 -> enabled = value != 0;
+                case 0 -> setStoredEnergy(value);
+                case 1 -> setScanProgress(value);
+                case 2 -> setScanning(value != 0);
+                case 3 -> setEnabled(value != 0);
             }
         }
 
@@ -82,7 +82,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     }
 
     public static void tick(World world, BlockPos pos, BlockState state1, ControllerBlockEntity controller) {
-        if (world instanceof ServerWorld serverWorld && controller.energyStorage.amount >= 100) {
+        if (controller.enabled && controller.energyStorage.amount >= 100 && world instanceof ServerWorld serverWorld) {
             controller.energyStorage.amount -= 100;
             if (controller.scanProgress < 100) {
                 controller.scanProgress++;
@@ -173,6 +173,16 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         return true;
+    }
+
+    public void setStoredEnergy(long amount) {
+        this.energyStorage.amount = amount;
+        markDirty();
+    }
+
+    public void setScanProgress(int progress) {
+        this.scanProgress = progress;
+        markDirty();
     }
 
     public void setScanning(boolean state) {
