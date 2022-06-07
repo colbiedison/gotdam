@@ -6,6 +6,8 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
@@ -31,12 +33,30 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         WItemSlot itemSlot = WItemSlot.of(blockInventory, 0);
         root.add(itemSlot, 10, 20);
 
-        // Scan button
-        SyncedWToggleButton toggleScanButton = new SyncedWToggleButton(2);
-        toggleScanButton.setOnToggle(state -> {
-            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), state).getPayload());
-        });
-        root.add(toggleScanButton, 123 ,3);
+//        // Scan button
+//        SyncedWToggleButton toggleScanButton = new SyncedWToggleButton(2);
+//        toggleScanButton.setOnToggle(state -> {
+//            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), state).getPayload());
+//        });
+//        root.add(toggleScanButton, 123 ,3);
+
+        // Scan start button
+        WButton startScanButton = new WButton();
+        startScanButton.setOnClick(() ->
+                ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), true).getPayload())
+        );
+        startScanButton.setLabel(new LiteralText("Scan"));
+        root.add(startScanButton, 10, 75);
+        startScanButton.setSize(32, 8);
+
+        // Scan stop button
+        WButton stopScanButton = new WButton();
+        stopScanButton.setOnClick(() ->
+                ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), false).getPayload())
+        );
+        stopScanButton.setLabel(new LiteralText("Stop").formatted(Formatting.RED));
+        root.add(stopScanButton, 47, 75);
+        stopScanButton.setSize(32, 8);
 
         // Power button
         SyncedWToggleButton powerToggleButton = new SyncedWToggleButton(3);
@@ -48,8 +68,8 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
 
         // Energy storage bar
         WBar energyStorageBar = WBar.withConstantMaximum(
-                new Identifier("gotdam:textures/gui/controller/scan_progress_bg.png"),
-                new Identifier("gotdam:textures/gui/controller/scan_progress_fg.png"),
+                new Identifier("gotdam:textures/gui/controller/energy_bar_bg.png"),
+                new Identifier("gotdam:textures/gui/controller/energy_bar_fg.png"),
                 0, (int) ControllerBlockEntity.ENERGY_CAPACITY,
                 WBar.Direction.UP
         );
@@ -61,10 +81,10 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
                 new Identifier("gotdam:textures/gui/controller/scan_progress_bg.png"),
                 new Identifier("gotdam:textures/gui/controller/scan_progress_fg.png"),
                 1, 100,
-                WBar.Direction.UP
+                WBar.Direction.RIGHT
         );
-        root.add(scanProgressBar, 140, 20);
-        scanProgressBar.setSize(8,64);
+        root.add(scanProgressBar, 12, 62);
+        scanProgressBar.setSize(64,8);
 
         // Player inventory
         WPlayerInvPanel playerInvPanel = this.createPlayerInventoryPanel();
