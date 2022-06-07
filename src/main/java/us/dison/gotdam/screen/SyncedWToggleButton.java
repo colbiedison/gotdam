@@ -17,7 +17,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import us.dison.gotdam.GotDam;
 
 public class SyncedWToggleButton extends WToggleButton {
     private final int field;
@@ -51,11 +50,7 @@ public class SyncedWToggleButton extends WToggleButton {
         this.field = field;
     }
 
-//    @Override
-//    public void tick() {
-//        super.tick();
-//        setToggle(host.getPropertyDelegate().get(2) != 0);
-//    }
+
     @Override
     @Environment(EnvType.CLIENT)
     public void paint(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {

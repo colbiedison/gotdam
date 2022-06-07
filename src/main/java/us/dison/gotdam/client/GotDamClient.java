@@ -19,6 +19,7 @@ public class GotDamClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        //noinspection RedundantTypeArguments
         ScreenRegistry.<ControllerGuiDescription, ControllerScreen>register(GotDam.SCREEN_HANDLER_TYPE, (gui, inventory, title) -> new ControllerScreen(gui, inventory.player, title));
         registerNetworking();
     }
