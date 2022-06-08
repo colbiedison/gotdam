@@ -83,11 +83,10 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     public static void tick(World world, BlockPos pos, BlockState state1, ControllerBlockEntity controller) {
         if (controller.enabled && controller.energyStorage.amount >= 100 && world instanceof ServerWorld serverWorld) {
-            controller.energyStorage.amount -= 100;
-            if (controller.scanProgress < 100) {
+            if (controller.scanning && controller.scanProgress < 100) {
+                controller.energyStorage.amount -= 100;
                 controller.scanProgress++;
-            }
-            else {
+            } else {
                 controller.scanProgress = 0;
             }
             controller.markDirty();
