@@ -1,5 +1,7 @@
 package us.dison.gotdam.scan;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import us.dison.gotdam.GotDam;
@@ -11,9 +13,11 @@ import java.util.concurrent.Executors;
 
 public class DamScanner extends AbstractScanner {
 
-    public static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
-    private static volatile boolean shouldStop = false;
+    public static final int MAX_SIZE = 64*64*32;
 
+    private volatile boolean shouldStop = false;
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ControllerBlockEntity controller;
 
     public DamScanner(ServerWorld world, ControllerBlockEntity controller, BlockPos startPos) {
@@ -21,7 +25,7 @@ public class DamScanner extends AbstractScanner {
         this.controller = controller;
     }
 
-    public static void stop() {
+    public void stop() {
         shouldStop = true;
     }
 
@@ -61,6 +65,7 @@ public class DamScanner extends AbstractScanner {
 
         if (!world.getBlockState(startPos).isAir()) return TypedScanResult.fail(DamArea.EMPTY);
         int topLevel = findTopLevel(startPos.getY());
+        area.setTopLevel(topLevel);
         GotDam.LOGGER.info("Top level: "+topLevel);
         ArrayList<BlockPos> queue = new ArrayList<>();
         queue.add(new BlockPos(startPos.getX(), topLevel, startPos.getZ()));
@@ -76,7 +81,8 @@ public class DamScanner extends AbstractScanner {
             queue.add(p.add(-1,  0,  0));
             queue.add(p.add( 0, -1,  0));
 
-            if (area.innerBlocks.size() > 64*64*32) return TypedScanResult.tooBig(DamArea.EMPTY);
+            if (area.innerBlocks.size() > MAX_SIZE) return TypedScanResult.tooBig(DamArea.EMPTY);
+            controller.setScanProgress(100d * area.innerBlocks.size() / MAX_SIZE);
         }
 
         return TypedScanResult.success(area);
@@ -85,5 +91,10 @@ public class DamScanner extends AbstractScanner {
     @Override
     public ControllerBlockEntity getController() {
         return this.controller;
+    }
+
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 }

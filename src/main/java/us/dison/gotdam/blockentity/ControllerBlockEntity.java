@@ -29,7 +29,11 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.base.SimpleEnergyStorage;
 import us.dison.gotdam.GotDam;
+import us.dison.gotdam.block.ControllerBlock;
 import us.dison.gotdam.inventory.ImplementedInventory;
+import us.dison.gotdam.scan.DamArea;
+import us.dison.gotdam.scan.DamScanner;
+import us.dison.gotdam.scan.TypedScanResult;
 import us.dison.gotdam.screen.ControllerGuiDescription;
 
 public class ControllerBlockEntity extends BlockEntity implements ImplementedInventory, InventoryProvider, PropertyDelegateHolder, NamedScreenHandlerFactory, SidedInventory {
@@ -47,15 +51,20 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     public double scanProgress = 0;
     private boolean scanning = false;
     private boolean enabled = false;
+    private TypedScanResult<DamArea> scanResult = TypedScanResult.notRunYet(DamArea.EMPTY);
+    private DamScanner scanner = null;
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
             return switch (index) {
                 case 0 -> (int) energyStorage.amount;
-                case 1 -> (int) scanProgress;
+                case 1 -> (int) (Math.sqrt(scanProgress) * 10);
                 case 2 -> scanning ? 1 : 0;
                 case 3 -> enabled ? 1 : 0;
+                case 4 -> scanResult.getStatus().ordinal();
+                case 5 -> scanResult.getData().getTopLevel();
+                case 6 -> scanResult.getData().getInnerBlocks().size();
 
                 default -> -1;
             };
@@ -73,7 +82,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
         @Override
         public int size() {
-            return 4;
+            return 7;
         }
     };
 
@@ -138,6 +147,30 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         }
     }
 
+    public void scan() {
+        if (world instanceof ServerWorld serverWorld) {
+            if (scanner == null) {
+                this.scanner = new DamScanner(
+                        serverWorld,
+                        this,
+                        getPos().offset(world.getBlockState(pos).get(ControllerBlock.FACING))
+                );
+            }
+
+            scanner.getExecutor().execute(() -> {
+                TypedScanResult<DamArea> result = scanner.scan();
+                setScanResult(result);
+                if (result.getStatus().isSuccessful()) {
+                    GotDam.LOGGER.info("Found " + result.getData().getInnerBlocks().size() + " blocks.");
+                    setScanProgress(100);
+                } else {
+                    GotDam.LOGGER.info("Scan failed.");
+                    setScanProgress(0);
+                }
+            });
+        }
+    }
+
     @Override
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
         return this;
@@ -179,18 +212,37 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         markDirty();
     }
 
-    public void setScanProgress(int progress) {
+    public void setScanProgress(double progress) {
         this.scanProgress = progress;
         markDirty();
     }
 
     public void setScanning(boolean state) {
         this.scanning = state;
+        if (state) {
+            scan();
+        } else {
+            scanner.stop();
+            GotDam.LOGGER.info("Stopped scan");
+        }
         markDirty();
     }
 
     public void setEnabled(boolean state) {
         this.enabled = state;
         markDirty();
+    }
+
+    public TypedScanResult<DamArea> getScanResult() {
+        return scanResult;
+    }
+
+    public void setScanResult(TypedScanResult<DamArea> scanResult) {
+        this.scanResult = scanResult;
+        markDirty();
+    }
+
+    public DamScanner getScanner() {
+        return scanner;
     }
 }

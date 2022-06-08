@@ -2,6 +2,7 @@ package us.dison.gotdam.screen;
 
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.*;
+import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +22,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
     private static final int INVENTORY_SIZE = 2;
 
     public ControllerGuiDescription(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(GotDam.SCREEN_HANDLER_TYPE, syncId, playerInventory, getBlockInventory(context, INVENTORY_SIZE), getBlockPropertyDelegate(context, 4));
+        super(GotDam.SCREEN_HANDLER_TYPE, syncId, playerInventory, getBlockInventory(context, INVENTORY_SIZE), getBlockPropertyDelegate(context, 7));
 
 //        WGridPanel root = new WGridPanel();
         WPlainPanel root = new WPlainPanel();
@@ -37,8 +38,8 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         WPlainPanel scanPanel = new WPlainPanel();
         {
             // Title
-            WText scanTitle = new WText(new LiteralText("Scanner"));
-            scanPanel.add(scanTitle, 14, 0);
+            WText title = new WText(new LiteralText("Scanner"));
+            scanPanel.add(title, 0, 0);
 
             // Scan progress bar
             WBar scanProgressBar = WBar.withConstantMaximum(
@@ -68,9 +69,38 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
             scanPanel.add(stopScanButton, 36, 23);
             stopScanButton.setSize(32, 8);
 
-            scanTitle.setSize(scanPanel.getWidth(), 8);
+            title.setSize(scanPanel.getWidth()+15, 16);
+            title.setHorizontalAlignment(HorizontalAlignment.CENTER);
         }
-        root.add(scanPanel, 80, 30);
+        root.add(scanPanel, 70, 10);
+
+        // Info panel
+        WPlainPanel infoPanel = new WPlainPanel();
+        infoPanel.setSize(128, 50);
+        {
+            // Title
+            WText title = new WText(new LiteralText("Info"));
+            infoPanel.add(title, 0, 0);
+            title.setSize(infoPanel.getWidth()/2, 8);
+            title.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+            // Status
+            SyncedWText status = new SyncedWText(new LiteralText("Status: "), 4);
+            status.forScanResult();
+            infoPanel.add(status, 0, 10);
+            status.setSize(infoPanel.getWidth(), 16);
+
+            // Size
+            SyncedWText size = new SyncedWText(new LiteralText("Size: "), 6);
+            infoPanel.add(size, 0, 20);
+            size.setSize(infoPanel.getWidth(), 16);
+
+            // Top level
+            SyncedWText topLevel = new SyncedWText(new LiteralText("Max y: "), 5);
+            infoPanel.add(topLevel, 0, 30);
+            topLevel.setSize(infoPanel.getWidth(), 16);
+        }
+        root.add(infoPanel, 10, 50);
 
         // Power button
         SyncedWToggleButton powerToggleButton = new SyncedWToggleButton(3);

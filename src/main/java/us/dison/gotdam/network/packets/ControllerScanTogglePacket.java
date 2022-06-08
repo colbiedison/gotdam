@@ -39,24 +39,6 @@ public class ControllerScanTogglePacket extends BasePacket {
             world.getServer().execute(() -> {
                 if (world.getBlockEntity(this.pos) instanceof ControllerBlockEntity controller) {
                     controller.setScanning(state);
-                    if (state) {
-                        DamScanner scanner = new DamScanner(
-                                world,
-                                controller,
-                                controller.getPos().offset(world.getBlockState(pos).get(ControllerBlock.FACING))
-                        );
-
-                        DamScanner.EXECUTOR.execute(() -> {
-                            TypedScanResult<DamArea> result = scanner.scan();
-                            if (result.getResult().isSuccessful())
-                                GotDam.LOGGER.info("Found " + result.getData().getInnerBlocks().size() + " blocks.");
-                            else
-                                GotDam.LOGGER.info("Scan failed.");
-                        });
-                    } else {
-                        DamScanner.stop();
-                        GotDam.LOGGER.info("Stopped scan");
-                    }
                 }
             });
         }
