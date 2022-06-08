@@ -5,13 +5,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import us.dison.gotdam.GotDam;
-import us.dison.gotdam.block.ControllerBlock;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
 import us.dison.gotdam.network.BasePacket;
-import us.dison.gotdam.scan.DamArea;
-import us.dison.gotdam.scan.DamScanner;
-import us.dison.gotdam.scan.TypedScanResult;
 
 public class ControllerScanTogglePacket extends BasePacket {
     public final BlockPos pos;

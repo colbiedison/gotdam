@@ -32,8 +32,8 @@ import us.dison.gotdam.GotDam;
 import us.dison.gotdam.block.ControllerBlock;
 import us.dison.gotdam.inventory.ImplementedInventory;
 import us.dison.gotdam.scan.DamArea;
+import us.dison.gotdam.scan.DamScanResult;
 import us.dison.gotdam.scan.DamScanner;
-import us.dison.gotdam.scan.TypedScanResult;
 import us.dison.gotdam.screen.ControllerGuiDescription;
 
 public class ControllerBlockEntity extends BlockEntity implements ImplementedInventory, InventoryProvider, PropertyDelegateHolder, NamedScreenHandlerFactory, SidedInventory {
@@ -51,7 +51,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     public double scanProgress = 0;
     private boolean scanning = false;
     private boolean enabled = false;
-    private TypedScanResult<DamArea> scanResult = TypedScanResult.notRunYet(DamArea.EMPTY);
+    private DamScanResult scanResult = DamScanResult.notRunYet(DamArea.EMPTY);
     private DamScanner scanner = null;
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
@@ -63,8 +63,8 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
                 case 2 -> scanning ? 1 : 0;
                 case 3 -> enabled ? 1 : 0;
                 case 4 -> scanResult.getStatus().ordinal();
-                case 5 -> scanResult.getData().getTopLevel();
-                case 6 -> scanResult.getData().getInnerBlocks().size();
+                case 5 -> scanResult.getArea().getTopLevel();
+                case 6 -> scanResult.getArea().getInnerBlocks().size();
 
                 default -> -1;
             };
@@ -158,10 +158,10 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
             }
 
             scanner.getExecutor().execute(() -> {
-                TypedScanResult<DamArea> result = scanner.scan();
+                DamScanResult result = scanner.scan();
                 setScanResult(result);
                 if (result.getStatus().isSuccessful()) {
-                    GotDam.LOGGER.info("Found " + result.getData().getInnerBlocks().size() + " blocks.");
+                    GotDam.LOGGER.info("Found " + result.getArea().getInnerBlocks().size() + " blocks.");
                     setScanProgress(100);
                 } else {
                     GotDam.LOGGER.info("Scan failed.");
@@ -233,11 +233,11 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         markDirty();
     }
 
-    public TypedScanResult<DamArea> getScanResult() {
+    public DamScanResult getScanResult() {
         return scanResult;
     }
 
-    public void setScanResult(TypedScanResult<DamArea> scanResult) {
+    public void setScanResult(DamScanResult scanResult) {
         this.scanResult = scanResult;
         markDirty();
     }

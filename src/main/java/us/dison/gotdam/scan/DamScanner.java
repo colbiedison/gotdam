@@ -1,7 +1,5 @@
 package us.dison.gotdam.scan;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import us.dison.gotdam.GotDam;
@@ -58,19 +56,19 @@ public class DamScanner extends AbstractScanner {
     }
 
     @Override
-    public TypedScanResult<DamArea> scan() {
+    public DamScanResult scan() {
         if (world.isClient) throw new UnsupportedOperationException("Scanning is not allowed on the client.");
         shouldStop = false;
         DamArea area = new DamArea(controller.getPos());
 
-        if (!world.getBlockState(startPos).isAir()) return TypedScanResult.fail(DamArea.EMPTY);
+        if (!world.getBlockState(startPos).isAir()) return DamScanResult.fail(DamArea.EMPTY);
         int topLevel = findTopLevel(startPos.getY());
         area.setTopLevel(topLevel);
         GotDam.LOGGER.info("Top level: "+topLevel);
         ArrayList<BlockPos> queue = new ArrayList<>();
         queue.add(new BlockPos(startPos.getX(), topLevel, startPos.getZ()));
         while (!queue.isEmpty()) {
-            if (shouldStop) return TypedScanResult.interrupted(DamArea.EMPTY);
+            if (shouldStop) return DamScanResult.interrupted(DamArea.EMPTY);
             BlockPos p = queue.remove(0);
             if (!world.getBlockState(p).isAir() || area.innerBlocks.contains(p.asLong()))
                 continue;
@@ -81,11 +79,11 @@ public class DamScanner extends AbstractScanner {
             queue.add(p.add(-1,  0,  0));
             queue.add(p.add( 0, -1,  0));
 
-            if (area.innerBlocks.size() > MAX_SIZE) return TypedScanResult.tooBig(DamArea.EMPTY);
+            if (area.innerBlocks.size() > MAX_SIZE) return DamScanResult.tooBig(DamArea.EMPTY);
             controller.setScanProgress(100d * area.innerBlocks.size() / MAX_SIZE);
         }
 
-        return TypedScanResult.success(area);
+        return DamScanResult.success(area);
     }
 
     @Override

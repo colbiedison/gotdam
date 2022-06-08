@@ -17,7 +17,7 @@ public enum ScanStatus implements ICodecProvider {
             ).apply(scanStatusInstance, ScanStatus::fromOrdinal)
     );
 
-    private String message;
+    private final String message;
 
     ScanStatus(String message) {
         this.message = message;

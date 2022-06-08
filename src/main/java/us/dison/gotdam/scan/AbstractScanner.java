@@ -1,12 +1,8 @@
 package us.dison.gotdam.scan;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.Objects;
 
 
 public abstract class AbstractScanner {
@@ -19,7 +15,7 @@ public abstract class AbstractScanner {
         this.startPos = startPos;
     }
 
-    public abstract TypedScanResult<? extends AbstractArea> scan();
+    public abstract AbstractScanResult<? extends AbstractArea> scan();
 
 
     public ServerWorld getWorld() {
