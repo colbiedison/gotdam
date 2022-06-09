@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class DamScanResult extends AbstractScanResult<DamArea> {
 
+    public static final DamScanResult EMPTY = notRunYet(DamArea.EMPTY);
     public static final Codec<DamScanResult> CODEC = RecordCodecBuilder.create(damScanResultInstance ->
             damScanResultInstance.group(
                     ScanStatus.CODEC.fieldOf("status").forGetter(DamScanResult::getStatus),

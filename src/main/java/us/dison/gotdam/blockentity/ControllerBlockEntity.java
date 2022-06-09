@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -30,8 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.base.SimpleEnergyStorage;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.block.ControllerBlock;
+import us.dison.gotdam.data.DamManager;
 import us.dison.gotdam.inventory.ImplementedInventory;
-import us.dison.gotdam.scan.DamArea;
+import us.dison.gotdam.scan.Dam;
 import us.dison.gotdam.scan.DamScanResult;
 import us.dison.gotdam.scan.DamScanner;
 import us.dison.gotdam.screen.ControllerGuiDescription;
@@ -51,8 +53,9 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     public double scanProgress = 0;
     private boolean scanning = false;
     private boolean enabled = false;
-    private DamScanResult scanResult = DamScanResult.notRunYet(DamArea.EMPTY);
+    private Dam dam = new Dam(-1, DamScanResult.EMPTY);
     private DamScanner scanner = null;
+    private int id = -1;
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
@@ -62,9 +65,9 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
                 case 1 -> (int) (Math.sqrt(scanProgress) * 10);
                 case 2 -> scanning ? 1 : 0;
                 case 3 -> enabled ? 1 : 0;
-                case 4 -> scanResult.getStatus().ordinal();
-                case 5 -> scanResult.getArea().getTopLevel();
-                case 6 -> scanResult.getArea().getInnerBlocks().size();
+                case 4 -> dam.getScan().getStatus().ordinal();
+                case 5 -> dam.getScan().getArea().getTopLevel();
+                case 6 -> dam.getScan().getArea().getInnerBlocks().size();
 
                 default -> -1;
             };
@@ -91,14 +94,24 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     }
 
     public static void tick(World world, BlockPos pos, BlockState state1, ControllerBlockEntity controller) {
-        if (controller.enabled && controller.energyStorage.amount >= 100 && world instanceof ServerWorld serverWorld) {
-            if (controller.scanning && controller.scanProgress < 100) {
-                controller.energyStorage.amount -= 100;
-                controller.scanProgress++;
-            } else {
-                controller.scanProgress = 0;
+        if (world instanceof ServerWorld serverWorld) {
+            if (controller.getID() < 0 || controller.getID() != controller.getDam().getID()) {
+                Dam dam = DamManager.ofWorld(serverWorld).getOrCreate(pos);
+                controller.setID(dam.getID());
+                controller.setDam(dam);
             }
-            controller.markDirty();
+
+            if (controller.enabled && controller.energyStorage.amount >= 100) {
+                if (controller.scanning && controller.scanProgress < 100) {
+                    controller.energyStorage.amount -= 100;
+                    controller.scanProgress++;
+                } else {
+                    controller.scanProgress = 0;
+                }
+                controller.markDirty();
+            }
+        } else if (world instanceof ClientWorld clientWorld) {
+
         }
     }
 
@@ -121,6 +134,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         Inventories.readNbt(tag, items);
         scanning = tag.getBoolean("scanning");
         enabled = tag.getBoolean("enabled");
+        id = tag.getInt("damID");
     }
 
     @Override
@@ -129,6 +143,7 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         Inventories.writeNbt(tag, items);
         tag.putBoolean("scanning", scanning);
         tag.putBoolean("enabled", enabled);
+        tag.putInt("damID", id);
 
         super.writeNbt(tag);
     }
@@ -234,15 +249,39 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
     }
 
     public DamScanResult getScanResult() {
-        return scanResult;
+        return dam.getScan();
     }
 
     public void setScanResult(DamScanResult scanResult) {
-        this.scanResult = scanResult;
-        markDirty();
+        if (world instanceof ServerWorld serverWorld) {
+            Dam d = new Dam(dam.getID(), scanResult);
+            setDam(d);
+            DamManager.ofWorld(serverWorld).set(d);
+        }
     }
 
     public DamScanner getScanner() {
         return scanner;
+    }
+
+    public int getID() {
+        return id;
+    }
+
+    public void setID(int damID) {
+        this.id = damID;
+        markDirty();
+    }
+
+    public Dam getDam() {
+        return dam;
+    }
+
+    public void setDam(Dam dam) {
+        if (world instanceof ServerWorld serverWorld) {
+            this.dam = dam;
+            DamManager.ofWorld(serverWorld).set(dam);
+            markDirty();
+        }
     }
 }

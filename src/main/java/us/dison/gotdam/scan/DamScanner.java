@@ -2,6 +2,8 @@ package us.dison.gotdam.scan;
 
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
 
@@ -59,7 +61,7 @@ public class DamScanner extends AbstractScanner {
     public DamScanResult scan() {
         if (world.isClient) throw new UnsupportedOperationException("Scanning is not allowed on the client.");
         shouldStop = false;
-        DamArea area = new DamArea(controller.getPos());
+        DamArea area = new DamArea(world.getRegistryKey().getValue(), controller.getPos());
 
         if (!world.getBlockState(startPos).isAir()) return DamScanResult.fail(DamArea.EMPTY);
         int topLevel = findTopLevel(startPos.getY());

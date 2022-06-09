@@ -1,24 +1,39 @@
 package us.dison.gotdam.scan;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractArea implements ICodecProvider {
 
+    protected final Identifier world;
     protected final BlockPos controllerPos;
     protected final List<Long> innerBlocks;
 
-    public AbstractArea(BlockPos controllerPos) {
-        this(controllerPos, new ArrayList<>());
+    public AbstractArea(Identifier world, BlockPos controllerPos) {
+        this(world, controllerPos, new ArrayList<>());
     }
 
-    public AbstractArea(BlockPos controllerPos, List<Long> blocks) {
+    public AbstractArea(Identifier world, BlockPos controllerPos, List<Long> blocks) {
+        this.world = world;
         this.controllerPos = controllerPos;
         this.innerBlocks = blocks;
+    }
+
+    public static ServerWorld getWorld(MinecraftServer server, AbstractArea area) {
+        return server.getWorld(RegistryKey.of(Registry.WORLD_KEY, area.getWorldID()));
+    }
+
+    public Identifier getWorldID() {
+        return world;
     }
 
     public BlockPos getControllerPos() {
