@@ -115,6 +115,14 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         }
     }
 
+    @Override
+    public void markRemoved() {
+        super.markRemoved();
+        if (world instanceof ServerWorld serverWorld) {
+            DamManager.ofWorld(serverWorld).remove(dam);
+        }
+    }
+
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
