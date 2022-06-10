@@ -23,6 +23,7 @@ repositories {
 		name = "CottonMC"
 		url = "https://server.bbkr.space/artifactory/libs-release"
 	}
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -48,6 +49,9 @@ dependencies {
 
 	// LibGUI
 	modImplementation include("io.github.cottonmc:LibGui:5.4.2+1.18.2")
+
+	// Renderer Library
+	include modImplementation("com.github.0x3C50:Renderer:51f5a72f86")
 
 }
 

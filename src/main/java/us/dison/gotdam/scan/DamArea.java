@@ -2,6 +2,7 @@ package us.dison.gotdam.scan;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +31,10 @@ public class DamArea extends AbstractArea {
     public DamArea(Identifier world, BlockPos controllerPos, List<Long> blocks, int topLevel) {
         super(world, controllerPos, blocks);
         this.topLevel = topLevel;
+    }
+
+    public static DamArea fromPacket(PacketByteBuf p) {
+        return new DamArea(p.readIdentifier(), p.readBlockPos(), p.readList(PacketByteBuf::readLong), p.readInt());
     }
 
     public int getTopLevel() {

@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 import us.dison.gotdam.scan.Dam;
+import us.dison.gotdam.scan.DamArea;
 import us.dison.gotdam.scan.DamScanResult;
 
 import java.util.ArrayList;
@@ -42,7 +43,6 @@ public class DamManager extends PersistentState {
 
     public static DamManager fromTag(NbtCompound tag) {
         DamManager manager = new DamManager();
-        manager.dams.clear();
         List<Dam> dams = CODEC.parse(NbtOps.INSTANCE, tag.getList("dams", NbtElement.COMPOUND_TYPE))
                 .result()
                 .orElse(Collections.emptyList());
@@ -75,13 +75,13 @@ public class DamManager extends PersistentState {
         return null;
     }
 
-    public Dam getOrCreate(BlockPos pos) {
+    public Dam getOrCreate(Identifier worldID, BlockPos pos) {
         Dam existingDam = get(pos);
         if (existingDam != null)
             return existingDam;
         else {
-            Dam newDam = new Dam(nextID(), DamScanResult.EMPTY);
-            add(newDam);
+            Dam newDam = new Dam(nextID(), DamScanResult.notRunYet(new DamArea(worldID, pos)));
+            set(newDam);
             return newDam;
         }
     }
@@ -104,7 +104,7 @@ public class DamManager extends PersistentState {
     }
 
     public void set(Dam dam) {
-        dams.remove(dam);
+        dams.removeIf(dam1 -> dam1.getID() == dam.getID());
         dams.add(dam);
         markDirty();
     }

@@ -63,14 +63,16 @@ public class DamScanner extends AbstractScanner {
         shouldStop = false;
         DamArea area = new DamArea(world.getRegistryKey().getValue(), controller.getPos());
 
-        if (!world.getBlockState(startPos).isAir()) return DamScanResult.fail(DamArea.EMPTY);
+        if (!world.getBlockState(startPos).isAir())
+            return DamScanResult.fail(DamArea.EMPTY);
         int topLevel = findTopLevel(startPos.getY());
         area.setTopLevel(topLevel);
         GotDam.LOGGER.info("Top level: "+topLevel);
         ArrayList<BlockPos> queue = new ArrayList<>();
         queue.add(new BlockPos(startPos.getX(), topLevel, startPos.getZ()));
         while (!queue.isEmpty()) {
-            if (shouldStop) return DamScanResult.interrupted(DamArea.EMPTY);
+            if (shouldStop)
+                return DamScanResult.interrupted(DamArea.EMPTY);
             BlockPos p = queue.remove(0);
             if (!world.getBlockState(p).isAir() || area.innerBlocks.contains(p.asLong()))
                 continue;
@@ -81,7 +83,8 @@ public class DamScanner extends AbstractScanner {
             queue.add(p.add(-1,  0,  0));
             queue.add(p.add( 0, -1,  0));
 
-            if (area.innerBlocks.size() > MAX_SIZE) return DamScanResult.tooBig(DamArea.EMPTY);
+            if (area.innerBlocks.size() > MAX_SIZE)
+                return DamScanResult.tooBig(DamArea.EMPTY);
             controller.setScanProgress(100d * area.innerBlocks.size() / MAX_SIZE);
         }
 

@@ -2,9 +2,13 @@ package us.dison.gotdam.scan;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.Unpooled;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.PacketByteBuf;
 
 public class Dam {
 
+    public static final Dam EMPTY = new Dam(-1, DamScanResult.EMPTY);
     public static final Codec<Dam> CODEC = RecordCodecBuilder.create(damInstance ->
             damInstance.group(
                     Codec.INT.fieldOf("id").forGetter(Dam::getID),
@@ -18,6 +22,12 @@ public class Dam {
     public Dam(int id, DamScanResult scanResult) {
         this.id = id;
         this.scan = scanResult;
+    }
+
+    public static Dam fromPacket(PacketByteBuf p) {
+        return CODEC.parse(NbtOps.INSTANCE, p.readNbt())
+                .result()
+                .orElseThrow();
     }
 
     public int getID() {

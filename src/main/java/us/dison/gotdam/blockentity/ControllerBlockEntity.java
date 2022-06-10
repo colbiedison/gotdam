@@ -22,6 +22,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -36,7 +37,10 @@ import us.dison.gotdam.inventory.ImplementedInventory;
 import us.dison.gotdam.scan.Dam;
 import us.dison.gotdam.scan.DamScanResult;
 import us.dison.gotdam.scan.DamScanner;
+import us.dison.gotdam.scan.ScanStatus;
 import us.dison.gotdam.screen.ControllerGuiDescription;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ControllerBlockEntity extends BlockEntity implements ImplementedInventory, InventoryProvider, PropertyDelegateHolder, NamedScreenHandlerFactory, SidedInventory {
 
@@ -95,8 +99,11 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
 
     public static void tick(World world, BlockPos pos, BlockState state1, ControllerBlockEntity controller) {
         if (world instanceof ServerWorld serverWorld) {
+            if (controller.getDam().getScan().getStatus() == ScanStatus.SUCCESS && controller.scanProgress != 100)
+                controller.setScanProgress(100);
+
             if (controller.getID() < 0 || controller.getID() != controller.getDam().getID()) {
-                Dam dam = DamManager.ofWorld(serverWorld).getOrCreate(pos);
+                Dam dam = DamManager.ofWorld(serverWorld).getOrCreate(serverWorld.getRegistryKey().getValue(), pos);
                 controller.setID(dam.getID());
                 controller.setDam(dam);
             }
@@ -115,13 +122,6 @@ public class ControllerBlockEntity extends BlockEntity implements ImplementedInv
         }
     }
 
-    @Override
-    public void markRemoved() {
-        super.markRemoved();
-        if (world instanceof ServerWorld serverWorld) {
-            DamManager.ofWorld(serverWorld).remove(dam);
-        }
-    }
 
     @Nullable
     @Override

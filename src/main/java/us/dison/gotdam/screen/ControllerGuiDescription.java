@@ -15,6 +15,7 @@ import us.dison.gotdam.blockentity.ControllerBlockEntity;
 import us.dison.gotdam.client.GotDamClient;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.packets.ControllerPowerTogglePacket;
+import us.dison.gotdam.network.packets.ControllerPreviewTogglePacket;
 import us.dison.gotdam.network.packets.ControllerScanTogglePacket;
 
 public class ControllerGuiDescription extends SyncedGuiDescription {
@@ -119,6 +120,16 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         );
         root.add(energyStorageBar, 155, 20);
         energyStorageBar.setSize(8,64);
+
+        // Preview toggle button
+        WToggleButton previewToggleButton = new WToggleButton();
+        previewToggleButton.setToggle(GotDamClient.PREVIEW_DAMS.stream().anyMatch(dam ->
+                dam.getScan().getArea().getControllerPos().asLong() == GotDamClient.getOpenControllerPos().asLong())
+        );
+        previewToggleButton.setOnToggle(state -> {
+            ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerPreviewTogglePacket(GotDamClient.getOpenControllerPos(), state).getPayload());
+        });
+        root.add(previewToggleButton, 143, 85);
 
         // Player inventory
         WPlayerInvPanel playerInvPanel = this.createPlayerInventoryPanel();

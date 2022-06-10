@@ -2,6 +2,7 @@ package us.dison.gotdam.scan;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.PacketByteBuf;
 
 public class DamScanResult extends AbstractScanResult<DamArea> {
 
@@ -35,6 +36,10 @@ public class DamScanResult extends AbstractScanResult<DamArea> {
 
     public static DamScanResult notRunYet(DamArea area) {
         return new DamScanResult(ScanStatus.NOT_RUN_YET, area);
+    }
+
+    public static DamScanResult fromPacket(PacketByteBuf p) {
+        return new DamScanResult(ScanStatus.fromOrdinal(p.readInt()), DamArea.fromPacket(p));
     }
 
 

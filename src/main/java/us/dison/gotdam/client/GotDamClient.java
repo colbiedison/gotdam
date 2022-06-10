@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL20;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.BasePacketHandler;
+import us.dison.gotdam.scan.Dam;
 import us.dison.gotdam.screen.ControllerGuiDescription;
 import us.dison.gotdam.screen.ControllerScreen;
 
@@ -32,7 +33,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class GotDamClient implements ClientModInitializer {
 
-    public static final ArrayList<Long> PREVIEW_BLOCKS = new ArrayList<>();
+    public static final ArrayList<Dam> PREVIEW_DAMS = new ArrayList<>();
 
     private static BlockPos openControllerPos = null;
 

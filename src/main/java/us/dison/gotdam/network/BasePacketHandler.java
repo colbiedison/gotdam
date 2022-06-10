@@ -21,7 +21,9 @@ package us.dison.gotdam.network;
 
 import net.minecraft.network.PacketByteBuf;
 import us.dison.gotdam.network.packets.ControllerPowerTogglePacket;
+import us.dison.gotdam.network.packets.ControllerPreviewTogglePacket;
 import us.dison.gotdam.network.packets.ControllerScanTogglePacket;
+import us.dison.gotdam.network.packets.DamPreviewPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,9 @@ public class BasePacketHandler {
 
     public enum PacketTypes {
         CONTROLLER_SCAN_TOGGLE(ControllerScanTogglePacket.class, ControllerScanTogglePacket::new),
-        CONTROLLER_POWER_TOGGLE(ControllerPowerTogglePacket.class, ControllerPowerTogglePacket::new)
+        CONTROLLER_POWER_TOGGLE(ControllerPowerTogglePacket.class, ControllerPowerTogglePacket::new),
+        CONTROLLER_PREVIEW_TOGGLE(ControllerPreviewTogglePacket.class, ControllerPreviewTogglePacket::new),
+        DAM_PREVIEW(DamPreviewPacket.class, DamPreviewPacket::new)
         ;
 
         private final Function<PacketByteBuf, BasePacket> factory;
