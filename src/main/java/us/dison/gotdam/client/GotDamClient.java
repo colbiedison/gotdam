@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.network.BasePacket;
@@ -31,8 +32,8 @@ public class GotDamClient implements ClientModInitializer {
         ScreenRegistry.<ControllerGuiDescription, ControllerScreen>register(GotDam.SCREEN_HANDLER_TYPE, (gui, inventory, title) -> new ControllerScreen(gui, inventory.player, title));
         registerNetworking();
         Events.registerEventHandlerClass(new RendererEventHandler());
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> clearPreviewDams());
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> clearPreviewDams());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> MinecraftClient.getInstance().execute(GotDamClient::clearPreviewDams));
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> MinecraftClient.getInstance().execute(GotDamClient::clearPreviewDams));
     }
 
     private void registerNetworking() {
