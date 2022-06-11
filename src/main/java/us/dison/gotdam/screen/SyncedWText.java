@@ -32,7 +32,7 @@ public class SyncedWText extends WText {
     public void tick() {
         super.tick();
         try {
-            MutableText t = baseText.copy();
+            MutableText t = baseText.copyContentOnly();
             if (fieldIsScanResult) {
                 ScanStatus result = ScanStatus.fromOrdinal(host.getPropertyDelegate().get(field));
                 setText(t.append(result.getMessage()));

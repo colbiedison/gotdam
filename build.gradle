@@ -41,17 +41,17 @@ dependencies {
 	}
 
 	// Tech Reborn
-	modImplementation "TechReborn:TechReborn-1.18:5.2.0"
+	modImplementation "TechReborn:TechReborn-1.19:5.3.0"
 
 	// Roughly Enough Items
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:8.2.470"
-	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:8.2.470"
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:9.0.475"
+	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:9.0.475"
 
 	// LibGUI
-	modImplementation include("io.github.cottonmc:LibGui:5.4.2+1.18.2")
+	modImplementation include("io.github.cottonmc:LibGui:6.0.0-beta.5+1.19-pre1")
 
 	// Renderer Library
-	include modImplementation("com.github.0x3C50:Renderer:51f5a72f86")
+	include modImplementation("com.github.0x3C50:Renderer:master-SNAPSHOT")
 
 }
 

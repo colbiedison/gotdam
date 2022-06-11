@@ -21,7 +21,7 @@ public class RendererEventHandler {
 
     @EventListener(shift = Shift.POST, type = EventType.WORLD_RENDER)
     void postWorldRender(RenderEvent renderEvent) {
-        if (PREVIEW_VBO == null) PREVIEW_VBO = new VertexBuffer();
+        if (PREVIEW_VBO == null) return;
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         RendererUtils.setupRender();
         renderEvent.getStack().push();
@@ -31,7 +31,7 @@ public class RendererEventHandler {
 
         renderEvent.getStack().translate(-camPos.x, -camPos.y, -camPos.z);
         PREVIEW_VBO.bind();
-        PREVIEW_VBO.setShader(renderEvent.getStack().peek().getPositionMatrix(), MinecraftClient.getInstance().gameRenderer.getBasicProjectionMatrix(fov), GameRenderer.getPositionColorShader());
+        PREVIEW_VBO.draw(renderEvent.getStack().peek().getPositionMatrix(), MinecraftClient.getInstance().gameRenderer.getBasicProjectionMatrix(fov), GameRenderer.getPositionColorShader());
         VertexBuffer.unbind();
         renderEvent.getStack().pop();
         RendererUtils.endRender();
@@ -118,11 +118,10 @@ public class RendererEventHandler {
                 }
             }
         }
-        buffer.end();
 
         PREVIEW_VBO = new VertexBuffer();
         PREVIEW_VBO.bind();
-        PREVIEW_VBO.upload(buffer);
+        PREVIEW_VBO.upload(buffer.end());
         VertexBuffer.unbind();
     }
 }

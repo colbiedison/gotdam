@@ -7,7 +7,8 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import us.dison.gotdam.GotDam;
@@ -39,7 +40,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         WPlainPanel scanPanel = new WPlainPanel();
         {
             // Title
-            WText title = new WText(new LiteralText("Scanner"));
+            WText title = new WText(Text.literal("Scanner"));
             scanPanel.add(title, 0, 0);
 
             // Scan progress bar
@@ -57,7 +58,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
             startScanButton.setOnClick(() ->
                     ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), true).getPayload())
             );
-            startScanButton.setLabel(new LiteralText("Scan"));
+            startScanButton.setLabel(Text.literal("Scan"));
             scanPanel.add(startScanButton, 0, 23);
             startScanButton.setSize(32, 8);
 
@@ -66,7 +67,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
             stopScanButton.setOnClick(() ->
                     ClientPlayNetworking.send(BasePacket.CHANNEL, new ControllerScanTogglePacket(GotDamClient.getOpenControllerPos(), false).getPayload())
             );
-            stopScanButton.setLabel(new LiteralText("Stop").formatted(Formatting.RED));
+            stopScanButton.setLabel(Text.literal("Stop").formatted(Formatting.RED));
             scanPanel.add(stopScanButton, 36, 23);
             stopScanButton.setSize(32, 8);
 
@@ -80,24 +81,24 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
         infoPanel.setSize(128, 50);
         {
             // Title
-            WText title = new WText(new LiteralText("Info"));
+            WText title = new WText(Text.literal("Info"));
             infoPanel.add(title, 0, 0);
             title.setSize(infoPanel.getWidth()/2, 8);
             title.setHorizontalAlignment(HorizontalAlignment.CENTER);
 
             // Status
-            SyncedWText status = new SyncedWText(new LiteralText("Status: "), 4);
+            SyncedWText status = new SyncedWText(Text.literal("Status: "), 4);
             status.forScanResult();
             infoPanel.add(status, 0, 10);
             status.setSize(infoPanel.getWidth(), 16);
 
             // Size
-            SyncedWText size = new SyncedWText(new LiteralText("Size: "), 6);
+            SyncedWText size = new SyncedWText(Text.literal("Size: "), 6);
             infoPanel.add(size, 0, 20);
             size.setSize(infoPanel.getWidth(), 16);
 
             // Top level
-            SyncedWText topLevel = new SyncedWText(new LiteralText("Max y: "), 5);
+            SyncedWText topLevel = new SyncedWText(Text.literal("Max y: "), 5);
             infoPanel.add(topLevel, 0, 30);
             topLevel.setSize(infoPanel.getWidth(), 16);
         }
