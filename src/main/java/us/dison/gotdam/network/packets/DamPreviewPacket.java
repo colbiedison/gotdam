@@ -26,7 +26,7 @@ public class DamPreviewPacket extends BasePacket {
 
     @Override
     public void handleOnClient(PlayerEntity player) {
-        if (player.world instanceof ClientWorld clientWorld) {
+        if (player.world instanceof ClientWorld clientWorld && clientWorld.getRegistryKey().getValue().equals(dam.getScan().getArea().getWorldID())) {
             GotDamClient.removePreviewDamIf(dam1 -> dam1.equals(dam));
             if (dam.getScan().getArea().getInnerBlocks().size() > 0) {
                 GotDamClient.addPreviewDam(dam);

@@ -4,8 +4,11 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -21,6 +24,9 @@ import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
 import us.dison.gotdam.client.GotDamClient;
 import us.dison.gotdam.data.DamManager;
+import us.dison.gotdam.network.packets.DamPreviewPacket;
+import us.dison.gotdam.scan.DamArea;
+import us.dison.gotdam.scan.DamScanResult;
 
 public class ControllerBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -58,8 +64,19 @@ public class ControllerBlock extends BlockWithEntity {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
-        if (world instanceof ServerWorld serverWorld && serverWorld.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
-            DamManager.ofWorld(serverWorld).remove(controller.getID());
+        if (world.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
+            if (world instanceof ServerWorld serverWorld) {
+                controller.setScanResult(DamScanResult.notRunYet(new DamArea(serverWorld.getRegistryKey().getValue(), controller.getPos())));
+                for (ServerWorld sw : serverWorld.getServer().getWorlds()) {
+                    for (ServerPlayerEntity p : sw.getPlayers()) {
+                        p.networkHandler.sendPacket(new DamPreviewPacket(controller.getDam()).toPacket(NetworkSide.CLIENTBOUND));
+                    }
+                }
+
+                DamManager.ofWorld(serverWorld).remove(controller.getID());
+            } else if (world instanceof ClientWorld clientWorld) {
+
+            }
         }
     }
 

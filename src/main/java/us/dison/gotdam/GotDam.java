@@ -1,6 +1,7 @@
 package us.dison.gotdam;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -13,8 +14,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.network.NetworkSide;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -26,6 +29,7 @@ import us.dison.gotdam.blockentity.ControllerBlockEntity;
 import us.dison.gotdam.data.DamManager;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.BasePacketHandler;
+import us.dison.gotdam.network.packets.PreviewRebuildPacket;
 import us.dison.gotdam.screen.ControllerGuiDescription;
 
 public class GotDam implements ModInitializer {
@@ -84,6 +88,11 @@ public class GotDam implements ModInitializer {
 				server.execute(() -> {
 					packet.handleOnServer(player);
 				});
+			});
+			ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+				if (entity instanceof ServerPlayerEntity serverPlayer) {
+					serverPlayer.networkHandler.sendPacket(new PreviewRebuildPacket().toPacket(NetworkSide.CLIENTBOUND));
+				}
 			});
 		}
 	}

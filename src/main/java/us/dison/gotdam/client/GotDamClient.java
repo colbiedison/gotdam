@@ -4,6 +4,7 @@ import me.x150.renderer.event.Events;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +31,8 @@ public class GotDamClient implements ClientModInitializer {
         ScreenRegistry.<ControllerGuiDescription, ControllerScreen>register(GotDam.SCREEN_HANDLER_TYPE, (gui, inventory, title) -> new ControllerScreen(gui, inventory.player, title));
         registerNetworking();
         Events.registerEventHandlerClass(new RendererEventHandler());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> clearPreviewDams());
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> clearPreviewDams());
     }
 
     private void registerNetworking() {
@@ -63,6 +66,15 @@ public class GotDamClient implements ClientModInitializer {
 
     public static void removePreviewDamIf(Predicate<? super Dam> filter) {
         PREVIEW_DAMS.removeIf(filter);
+        RendererEventHandler.rebuildPreviews();
+    }
+
+    public static void clearPreviewDams() {
+        PREVIEW_DAMS.clear();
+        RendererEventHandler.rebuildPreviews();
+    }
+
+    public static void onChangeDimension() {
         RendererEventHandler.rebuildPreviews();
     }
 }

@@ -47,57 +47,62 @@ public class RendererEventHandler {
         int a = color.getAlpha();
 
         buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        for (Dam dam : GotDamClient.getPreviewDams()) {
-            for (Long longBlock : dam.getScan().getArea().getInnerBlocks()) {
-                BlockPos pos = BlockPos.fromLong(longBlock);
-                if (pos.getY() == dam.getScan().getArea().getTopLevel()) {
-                    Vec3d start = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
-                    Vec3d end = start.add(1, 1, 1);
-                    float x1 = (float) start.x;
-                    float y1 = (float) start.y;
-                    float z1 = (float) start.z;
-                    float x2 = (float) end.x;
-                    float y2 = (float) end.y;
-                    float z2 = (float) end.z;
+        if (MinecraftClient.getInstance().world != null) {
+            for (Dam dam : GotDamClient.getPreviewDams()) {
+                if (!MinecraftClient.getInstance().world.getRegistryKey().getValue().equals(dam.getScan().getArea().getWorldID()))
+                    continue;
 
-                    // Bottom
-                    buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
-                    buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
+                for (Long longBlock : dam.getScan().getArea().getInnerBlocks()) {
+                    BlockPos pos = BlockPos.fromLong(longBlock);
+                    if (pos.getY() == dam.getScan().getArea().getTopLevel()) {
+                        Vec3d start = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
+                        Vec3d end = start.add(1, 1, 1);
+                        float x1 = (float) start.x;
+                        float y1 = (float) start.y;
+                        float z1 = (float) start.z;
+                        float x2 = (float) end.x;
+                        float y2 = (float) end.y;
+                        float z2 = (float) end.z;
 
-                    buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
-                    buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
+                        // Bottom
+                        buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
-                    buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
-                    buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
 
-                    // Top
-                    buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
-                    buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
 
-                    buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
-                    buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
+                        // Top
+                        buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
-                    buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
-                    buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
 
-                    // Vertical
-                    buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
-                    buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
 
-                    buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
-                    buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
+                        // Vertical
+                        buffer.vertex(x1, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y2, z1).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
-                    buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
+                        buffer.vertex(x1, y1, z2).color(r, g, b, a).next();
+                        buffer.vertex(x1, y2, z2).color(r, g, b, a).next();
 
-                    buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
-                    buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y1, z1).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z1).color(r, g, b, a).next();
+
+                        buffer.vertex(x2, y1, z2).color(r, g, b, a).next();
+                        buffer.vertex(x2, y2, z2).color(r, g, b, a).next();
+                    }
                 }
             }
         }
