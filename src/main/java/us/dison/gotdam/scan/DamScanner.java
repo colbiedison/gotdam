@@ -1,7 +1,11 @@
 package us.dison.gotdam.scan;
 
+import net.minecraft.block.FernBlock;
+import net.minecraft.block.PlantBlock;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import us.dison.gotdam.GotDam;
@@ -19,6 +23,8 @@ public class DamScanner extends AbstractScanner {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ControllerBlockEntity controller;
+
+    private BlockPos lastValidPos = null;
 
     public DamScanner(ServerWorld world, ControllerBlockEntity controller, BlockPos startPos) {
         super(world, controller, startPos);
@@ -38,13 +44,15 @@ public class DamScanner extends AbstractScanner {
         while (!queue.isEmpty()) {
             if (shouldStop) return false;
             BlockPos p = queue.remove(0);
-            if (!world.getBlockState(p).isAir() || blocks.contains(p.asLong()))
+            if (!world.getBlockState(p).isAir() || world.getBlockState(p).getBlock() instanceof PlantBlock || blocks.contains(p.asLong()))
                 continue;
             blocks.add(p.asLong());
-            queue.add(p.add( 0,  0,  1));
-            queue.add(p.add( 0,  0, -1));
-            queue.add(p.add( 1,  0,  0));
-            queue.add(p.add(-1,  0,  0));
+            queue.add(p.offset(Direction.NORTH));
+            queue.add(p.offset(Direction.EAST));
+            queue.add(p.offset(Direction.SOUTH));
+            queue.add(p.offset(Direction.WEST));
+
+            randomParticle(p);
 
             if (blocks.size() > 64*64) return false;
         }
@@ -74,14 +82,17 @@ public class DamScanner extends AbstractScanner {
             if (shouldStop)
                 return DamScanResult.interrupted(DamArea.EMPTY);
             BlockPos p = queue.remove(0);
-            if (!world.getBlockState(p).isAir() || area.innerBlocks.contains(p.asLong()))
+            if (!world.getBlockState(p).isAir() && !(world.getBlockState(p).getBlock() instanceof PlantBlock) || area.innerBlocks.contains(p.asLong())) {
                 continue;
+            }
             area.innerBlocks.add(p.asLong());
-            queue.add(p.add( 0,  0,  1));
-            queue.add(p.add( 0,  0, -1));
-            queue.add(p.add( 1,  0,  0));
-            queue.add(p.add(-1,  0,  0));
-            queue.add(p.add( 0, -1,  0));
+            queue.add(p.offset(Direction.NORTH));
+            queue.add(p.offset(Direction.EAST));
+            queue.add(p.offset(Direction.SOUTH));
+            queue.add(p.offset(Direction.WEST));
+            queue.add(p.offset(Direction.DOWN));
+
+            randomParticle(p);
 
             if (area.innerBlocks.size() > MAX_SIZE)
                 return DamScanResult.tooBig(DamArea.EMPTY);
@@ -89,6 +100,11 @@ public class DamScanner extends AbstractScanner {
         }
 
         return DamScanResult.success(area);
+    }
+
+    public void randomParticle(BlockPos p) {
+        if (Math.random() >= 0.75d)
+            world.spawnParticles(ParticleTypes.INSTANT_EFFECT, p.getX()+0.5d, p.getY()+0.5d, p.getZ()+0.5d, 1, 0.5d, 0.5d, 0.5d, 1);
     }
 
     @Override

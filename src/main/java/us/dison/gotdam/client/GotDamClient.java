@@ -29,11 +29,12 @@ import us.dison.gotdam.screen.ControllerScreen;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
 public class GotDamClient implements ClientModInitializer {
 
-    public static final ArrayList<Dam> PREVIEW_DAMS = new ArrayList<>();
+    private static final ArrayList<Dam> PREVIEW_DAMS = new ArrayList<>();
 
     private static BlockPos openControllerPos = null;
 
@@ -63,5 +64,19 @@ public class GotDamClient implements ClientModInitializer {
 
     public static BlockPos getOpenControllerPos() {
         return openControllerPos;
+    }
+
+    public static ArrayList<Dam> getPreviewDams() {
+        return new ArrayList<>(PREVIEW_DAMS);
+    }
+
+    public static void addPreviewDam(Dam d) {
+        PREVIEW_DAMS.add(d);
+        RendererEventHandler.rebuildPreviews();
+    }
+
+    public static void removePreviewDamIf(Predicate<? super Dam> filter) {
+        PREVIEW_DAMS.removeIf(filter);
+        RendererEventHandler.rebuildPreviews();
     }
 }

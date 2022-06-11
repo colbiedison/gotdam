@@ -123,7 +123,7 @@ public class ControllerGuiDescription extends SyncedGuiDescription {
 
         // Preview toggle button
         WToggleButton previewToggleButton = new WToggleButton();
-        previewToggleButton.setToggle(GotDamClient.PREVIEW_DAMS.stream().anyMatch(dam ->
+        previewToggleButton.setToggle(GotDamClient.getPreviewDams().stream().anyMatch(dam ->
                 dam.getScan().getArea().getControllerPos().asLong() == GotDamClient.getOpenControllerPos().asLong())
         );
         previewToggleButton.setOnToggle(state -> {

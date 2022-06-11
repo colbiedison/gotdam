@@ -32,9 +32,9 @@ public class DamPreviewPacket extends BasePacket {
     @Override
     public void handleOnClient(PlayerEntity player) {
         if (player.world instanceof ClientWorld clientWorld) {
-            GotDamClient.PREVIEW_DAMS.removeIf(dam1 -> dam1.equals(dam));
+            GotDamClient.removePreviewDamIf(dam1 -> dam1.equals(dam));
             if (dam.getScan().getArea().getInnerBlocks().size() > 0) {
-                GotDamClient.PREVIEW_DAMS.add(dam);
+                GotDamClient.addPreviewDam(dam);
             }
         }
     }
