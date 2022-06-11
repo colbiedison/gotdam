@@ -2,7 +2,6 @@ package us.dison.gotdam.scan;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 
@@ -41,8 +40,7 @@ public class Dam {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Dam dam)
-            if (dam.getID() == getID())
-                return true;
+            return dam.getID() == getID();
 
         return false;
     }

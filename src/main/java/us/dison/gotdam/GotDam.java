@@ -18,7 +18,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
@@ -56,6 +55,7 @@ public class GotDam implements ModInitializer {
 		});
 
 		SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(ID_CONTROLLER, (syncId, inventory) -> new ControllerGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY));
+
 	}
 
 	private void registerBlocks() {

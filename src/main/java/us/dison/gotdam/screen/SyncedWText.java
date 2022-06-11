@@ -7,8 +7,8 @@ import us.dison.gotdam.scan.ScanStatus;
 
 public class SyncedWText extends WText {
 
-    private int field;
-    private Text baseText;
+    private final int field;
+    private final Text baseText;
 
     private boolean fieldIsScanResult = false;
 

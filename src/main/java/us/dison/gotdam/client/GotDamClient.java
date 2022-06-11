@@ -1,24 +1,12 @@
 package us.dison.gotdam.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.x150.renderer.event.Events;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.network.BasePacket;
 import us.dison.gotdam.network.BasePacketHandler;
@@ -27,8 +15,6 @@ import us.dison.gotdam.screen.ControllerGuiDescription;
 import us.dison.gotdam.screen.ControllerScreen;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)

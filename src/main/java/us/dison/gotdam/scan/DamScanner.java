@@ -1,13 +1,10 @@
 package us.dison.gotdam.scan;
 
-import net.minecraft.block.FernBlock;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import us.dison.gotdam.GotDam;
 import us.dison.gotdam.blockentity.ControllerBlockEntity;
 
@@ -23,8 +20,6 @@ public class DamScanner extends AbstractScanner {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ControllerBlockEntity controller;
-
-    private BlockPos lastValidPos = null;
 
     public DamScanner(ServerWorld world, ControllerBlockEntity controller, BlockPos startPos) {
         super(world, controller, startPos);

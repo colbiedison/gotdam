@@ -24,8 +24,7 @@ public class DamManager extends PersistentState {
     private static final Codec<List<Dam>> CODEC = Codec.list(Dam.CODEC);
 
     private final ServerWorld world = null;
-
-    private List<Dam> dams = new ArrayList<>();
+    private final List<Dam> dams = new ArrayList<>();
 
     public DamManager() {
     }

@@ -35,23 +35,6 @@ public class RendererEventHandler {
         VertexBuffer.unbind();
         renderEvent.getStack().pop();
         RendererUtils.endRender();
-
-//        MSAAFramebuffer.use(MSAAFramebuffer.MAX_SAMPLES, () -> {
-//            ArrayList<Long> blocks = new ArrayList<>();
-//            for (Dam dam : GotDamClient.PREVIEW_DAMS) {
-//                for (Long longBlock : dam.getScan().getArea().getInnerBlocks()) {
-//                    BlockPos pos = BlockPos.fromLong(longBlock);
-//                    if (pos.getY() == dam.getScan().getArea().getTopLevel()) {
-//                        Renderer3d.renderOutline(
-//                                renderEvent.getStack(),
-//                                new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
-//                                new Vec3d(1, 1, 1),
-//                                new Color(0, 0, 255, 127)
-//                        );
-//                    }
-//                }
-//            }
-//        });
     }
 
     public static void rebuildPreviews() {

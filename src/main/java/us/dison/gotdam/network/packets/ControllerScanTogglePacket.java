@@ -38,15 +38,4 @@ public class ControllerScanTogglePacket extends BasePacket {
             });
         }
     }
-
-//    @Override
-//    public void handleOnClient(PlayerEntity player) {
-//        if (player.world instanceof ClientWorld world) {
-//            MinecraftClient.getInstance().execute(() -> {
-//                if (world.getBlockEntity(this.pos) instanceof ControllerBlockEntity controller) {
-//                    controller.setScanning(state);
-//                }
-//            });
-//        }
-//    }
 }

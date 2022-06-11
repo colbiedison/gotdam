@@ -21,8 +21,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -39,8 +37,6 @@ import us.dison.gotdam.scan.DamScanResult;
 import us.dison.gotdam.scan.DamScanner;
 import us.dison.gotdam.scan.ScanStatus;
 import us.dison.gotdam.screen.ControllerGuiDescription;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ControllerBlockEntity extends BlockEntity implements ImplementedInventory, InventoryProvider, PropertyDelegateHolder, NamedScreenHandlerFactory, SidedInventory {
 
